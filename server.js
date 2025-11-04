@@ -15,7 +15,6 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Mostrar token en logs
 console.log("Token de Mercado Pago:", process.env.ACCESS_TOKEN);
 
 if (!process.env.ACCESS_TOKEN) {
@@ -23,12 +22,10 @@ if (!process.env.ACCESS_TOKEN) {
   process.exit(1);
 }
 
-// ✅ Nueva forma de inicializar Mercado Pago
 const client = new MercadoPagoConfig({
   accessToken: process.env.ACCESS_TOKEN,
 });
 
-// ✅ Crear preferencia
 app.post("/create_preference", async (req, res) => {
   try {
     const { title, quantity, price, description, image } = req.body;
@@ -51,9 +48,9 @@ app.post("/create_preference", async (req, res) => {
         },
       ],
       back_urls: {
-        success: "https://numiscol.com/success",
-        failure: "https://numiscol.com/failure",
-        pending: "https://numiscol.com/pending",
+        success: "https://numicol-backend.onrender.com/success",
+        failure: "https://numicol-backend.onrender.com/failure",
+        pending: "https://numicol-backend.onrender.com/pending",
       },
       auto_return: "approved",
     };
@@ -63,6 +60,7 @@ app.post("/create_preference", async (req, res) => {
     res.json({
       preference_id: response.id,
       init_point: response.init_point,
+      sandbox_init_point: response.sandbox_init_point,
     });
 
   } catch (error) {
@@ -71,12 +69,16 @@ app.post("/create_preference", async (req, res) => {
   }
 });
 
-// Servidor
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`🚀 Servidor MercadoPago corriendo en el puerto ${PORT}`);
-});
-
 app.get("/", (req, res) => {
   res.send("✅ Backend de Numicol funcionando correctamente");
+});
+
+// ✅ Rutas de confirmación
+app.get("/success", (req, res) => res.send("✅ Pago aprobado correctamente."));
+app.get("/failure", (req, res) => res.send("❌ El pago falló."));
+app.get("/pending", (req, res) => res.send("⌛ Pago pendiente de confirmación."));
+
+const PORT = process.env.PORT || 10000;
+app.listen(PORT, () => {
+  console.log(`🚀 Servidor MercadoPago corriendo en el puerto ${PORT}`);
 });
