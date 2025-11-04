@@ -16,16 +16,16 @@ app.use(express.json());
 app.use(cors());
 
 // Mostrar token en logs
-console.log("Token de Mercado Pago:", process.env.MERCADOPAGO_ACCESS_TOKEN);
+console.log("Token de Mercado Pago:", process.env.ACCESS_TOKEN);
 
-if (!process.env.MERCADOPAGO_ACCESS_TOKEN) {
-  console.error("❌ ERROR: No se encontró MERCADOPAGO_ACCESS_TOKEN en el archivo .env");
+if (!process.env.ACCESS_TOKEN) {
+  console.error("❌ ERROR: No se encontró ACCESS_TOKEN en el archivo .env");
   process.exit(1);
 }
 
 // ✅ Nueva forma de inicializar Mercado Pago
 const client = new MercadoPagoConfig({
-  accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN,
+  accessToken: process.env.ACCESS_TOKEN,
 });
 
 // ✅ Crear preferencia
