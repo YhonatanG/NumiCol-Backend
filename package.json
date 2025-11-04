@@ -1,16 +1,15 @@
 {
-  "name": "backend",
+  "name": "numiscol-backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "server.js",
+  "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node server.js"
+    "start": "node index.js"
   },
   "dependencies": {
+    "express": "^4.19.2",
     "cors": "^2.8.5",
-    "dotenv": "^16.6.1",
-    "express": "^4.19.0",
-    "mercadopago": "^1.5.14"
+    "body-parser": "^1.20.3",
+    "node-fetch": "^3.3.2"
   }
 }

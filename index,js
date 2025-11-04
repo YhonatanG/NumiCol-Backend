@@ -1,0 +1,67 @@
+// index.js
+import express from "express";
+import cors from "cors";
+import bodyParser from "body-parser";
+import fetch from "node-fetch";
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.use(cors());
+app.use(bodyParser.json());
+
+// ⚙️ Token de acceso de Mercado Pago (usa tu propio token de PRODUCCIÓN o TEST)
+const ACCESS_TOKEN = "APP_USR-7024521349711098-103119-34ed63bd4f4ee52f132cc0cc6ac359d9-2959447131";
+
+// 🧾 Endpoint para crear la preferencia de pago
+app.post("/create_preference", async (req, res) => {
+  try {
+    const { title, quantity, price, description, image } = req.body;
+
+    const preference = {
+      items: [
+        {
+          title: title || "Producto",
+          quantity: quantity || 1,
+          currency_id: "COP",
+          unit_price: price || 0,
+          description: description || "",
+          picture_url: image || "",
+        },
+      ],
+      back_urls: {
+        success: "https://numiscol.com/success",
+        failure: "https://numiscol.com/failure",
+        pending: "https://numiscol.com/pending",
+      },
+      auto_return: "approved",
+    };
+
+    const response = await fetch("https://api.mercadopago.com/checkout/preferences", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${ACCESS_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(preference),
+    });
+
+    const data = await response.json();
+
+    if (data.id) {
+      console.log("✅ Preferencia creada:", data.id);
+      res.json({ preference_id: data.id, init_point: data.init_point });
+    } else {
+      console.error("❌ Error en respuesta de Mercado Pago:", data);
+      res.status(400).json({ error: "Error al crear preferencia", details: data });
+    }
+  } catch (error) {
+    console.error("❌ Error al crear la preferencia:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+});
+
+// 🚀 Arranque del servidor
+app.listen(PORT, () => {
+  console.log(`Servidor backend corriendo en el puerto ${PORT}`);
+});
